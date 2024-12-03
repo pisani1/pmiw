@@ -268,7 +268,7 @@ function pantallaInstrucciones(){
  
  textAlign(LEFT);
   textSize(15);
-  text("1. ¡Ten cuidad! tienes dos vidas, si te quedas sin ellas, pierdes.", 50, height/2 - 130);
+  text("1. ¡Ten cuidado! tienes dos vidas, si te quedas sin ellas, pierdes.", 50, height/2 - 130);
   text("2. Tienes que agarrar a 10 marcianitos para poder ganar, ayúdate \ncon el mouse para tener control de la caja y poder recogerlos.", 50, height/2 -100);
   text("3. ¡Cuidado con Zurg! Si lo recoges a \nél te quitara puntos, evitando que ganes.", 50, height/2 - 55);
   text("¡Suerte!", 50, height/2 +20);
