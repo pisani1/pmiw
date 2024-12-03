@@ -5,31 +5,20 @@
 
 
 let sonidoMusica;
+let portada, muñecoImagen, muñecoMaloImagen, imagenCaja, corazonImagen;
+let pantinstru, fondoimag, derrota, victoria;
+
 let pantalla = 1;
-let portada;
-let muñecos = [];
-let vidas;
-let estadoJuego;
-let puntos = 0;
-let objetivo = 10;
+let juego;
+let estadoJuego = "";
 
-let victoria;
-let derrota;
-let fondoimag;
-let pantinstru;
-let muñecoMaloImagen;
-let muñecoImagen;
-let cajon;
-let imagencaja;
-let corazonImagen;
-
-
+//cargo imagenes
 function preload(){
 portada = loadImage("data/imagenes/inicio1.jpg");
 
 muñecoImagen = loadImage("data/imagenes/lagarra2.png");
 
-imagencaja = loadImage("data/imagenes/caja2.png");
+imagenCaja = loadImage("data/imagenes/caja2.png");
 
 corazonImagen = loadImage("data/imagenes/corazon2.png");
 
@@ -44,6 +33,7 @@ derrota = loadImage("data/imagenes/derrota.jpg");
 victoria = loadImage("data/imagenes/victoria2.png");
 }
 
+
 function setup() {
   createCanvas(640,480);
   
@@ -54,94 +44,66 @@ function setup() {
     sonidoMusica.loop = true;
     sonidoMusica.style.display = "none";
   }
-  cajon = new caja();
-  vidas = new Vidas(2);
+  
+  //instancia del juego
+  juego = new Juego();
   
 }
 
 
-//pantalla de Juego
-function pantallaJuego(){
-background(50);
-image(fondoimag, 0, 0);
+function draw() {
+ background(200);
 
-if(frameCount % 60 === 0){
-  if(random(1)< 0.2){
-  muñecos.push(new MuñecoMalo());
-  } else{
-muñecos.push(new muñeco());
-
-}
-}
-
-for(let i = muñecos.length - 1; i >= 0; i--){
-muñecos[i].mostrar();
-muñecos[i].mover();
-
-if (muñecos[i]instanceof muñeco && muñecos[i].y > cajon.y && muñecos[i].x > cajon.x && muñecos[i].x < cajon.x + cajon.ancho){
-    muñecos.splice(i,1);
-    puntos++;
-}
-
-  else if(muñecos[i]instanceof MuñecoMalo && muñecos[i].y > cajon.y && muñecos[i].x > cajon.x && muñecos[i].x < cajon.x + cajon.ancho){
-
-    muñecos.splice(i,1);
-    puntos--;
- } else if(muñecos[i].y > height){
-     if (muñecos[i] instanceof muñeco){
-       vidas.perderVida();
- }
- muñecos.splice(i,1);
-}
+//llamo la navegacion e incluida todo el diseño/funcion del juego
+  navPantallas();
 }
 
 
 
-vidas.mostrar();
-
-fill(255);
-textSize(20);
-text("Puntaje:" + puntos, 100, 90);
-
-if (vidas.cantidad <=0){
-  estadoJuego = "derrota";
-  pantalla = 4;
-} else if (puntos >= objetivo){
-  estadoJuego = "victoria";
-  pantalla = 4;
+function navPantallas(){
+  //navegacion de pantallas
+if(pantalla===1){
+pantallaPrincipal();
+} else if(pantalla === 2){
+pantallaInstrucciones();
+} else if (pantalla === 3){
+ juego.dibujar();
+} else if(pantalla === 4){
+pantallaVictoriaoderrota();
+} else if (pantalla === 5){
+pantallaCreditos();
 }
 
-//mostrar cajon
-cajon.mostrar();
-cajon.mover();
 }
 
+//creacion del marcianito
 class muñeco{
-constructor(){
-this.x = random(width);
-this.y = 0
-this.vel = random(4,7);
-this.size = 80;
+  constructor(){
+    this.x = random(width);
+    this.y = 0
+    this.vel = random(4,7);
+    this.size = 80;
 }
 
 mostrar(){
-image(muñecoImagen, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+  image(muñecoImagen, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
 }
 
 mover(){
-this.y += this.vel;
+  this.y += this.vel;
 }
 
 }
 
+//vidas
 class Vidas {
-constructor(cantidadInicial){
-this.cantidad = cantidadInicial;
+  constructor(cantidadInicial){
+    this.cantidad = cantidadInicial;
 }
 
 mostrar(){
-for (let i = 0; i < this.cantidad; i++){
-  image(corazonImagen, 10 + i * 40, 10, 30, 30);
+  for (let i = 0; i < this.cantidad; i++){
+    image(corazonImagen, 10 + i * 40, 10, 30, 30);
 }
 }
 
@@ -156,57 +118,110 @@ if (this.cantidad > 0){
 
 //cajon
 class caja{
-constructor(){
-this.x = width/2 - 75;
-this.y = height - 90;
-this.ancho = 150;
-this.alto = 80;
+  constructor(){
+    this.x = width/2 - 75;
+    this.y = height - 90;
+    this.ancho = 150;
+    this.alto = 80;
 }
 
 mostrar(){
-image(imagencaja, this.x, this.y, this.ancho, this.alto);
+  image(imagenCaja, this.x, this.y, this.ancho, this.alto);
 }
 
 mover(){
-this.x = mouseX - this.ancho/2;
+  this.x = mouseX - this.ancho/2;
 }
 }
 
+//Zurg
 class MuñecoMalo{
-constructor(){
-this.x = random(width);
-this.y = 0;
-this.vel = random(4,7);
-this.size = 80;
+  constructor(){
+    this.x = random(width);
+    this.y = 0;
+    this.vel = random(4,7);
+    this.size = 80;
 }
 
 mostrar(){
-image(muñecoMaloImagen, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+  image(muñecoMaloImagen, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
 }
 
 mover(){
-this.y += this.vel;
+  this.y += this.vel;
 }
 }
 
+//funcion del Juego
+class Juego{
+  constructor(){
+    this.vidas = new Vidas(2);
+    this.puntos = 0;
+    this.objetivo = 10;
+    this.estado = "";
+    this.muñecos = [];
+    this.cajon = new caja();
+  }
 
+  reiniciar(){
+    this.vidas = new Vidas(2);
+    this.puntos = 0;
+    this.estado = "";
+    estadoJuego = "";
+    this.muñecos = [];
+  }
 
-function draw() {
-  console.log();
- background(200);
-
-//navegacion de pantallas
-if(pantalla===1){
-pantallaPrincipal();
-} else if(pantalla === 2){
-pantallaInstrucciones();
-} else if (pantalla === 3){
-pantallaJuego();
-} else if(pantalla === 4){
-pantallaVictoriaoderrota();
-} else if (pantalla === 5){
-pantallaCreditos();}
-
+  dibujar(){
+    background(50);
+    image(fondoimag, 0, 0);
+  
+  //frecuencia de como caen los muñecos
+    if(frameCount%60 === 0){
+      if (random(1)< 0.2){
+        this.muñecos.push(new MuñecoMalo());
+    } else {
+        this.muñecos.push(new muñeco());
+    }
+  }
+ 
+ //si tocan la caja restan/suman/perdes vidas
+  for(let i = this.muñecos.length - 1; i >= 0; i--){
+    this.muñecos[i].mostrar();
+    this.muñecos[i].mover();
+    
+      if(this.muñecos[i].y > this.cajon.y && this.muñecos[i].x > this.cajon.x && this.muñecos[i].x < this.cajon.x + this.cajon.ancho){
+        if(this.muñecos[i] instanceof muñeco){
+            this.puntos++;
+        } else if (this.muñecos[i] instanceof MuñecoMalo){
+            this.puntos--;
+        }
+        this.muñecos.splice(i,1);
+      } else if (this.muñecos[i].y > height){
+        if(this.muñecos[i] instanceof muñeco){
+          this.vidas.perderVida();
+        }
+          this.muñecos.splice(i,1); //desaparece
+      } 
+  }
+  this.vidas.mostrar();
+    fill(255);
+    textSize(20);
+    text("Puntaje:" + this.puntos, 100, 90);
+  
+ //perdes
+  if(this.vidas.cantidad <= 0){
+    estadoJuego = "derrota";
+    pantalla = 4;
+    
+  } else if (this.puntos >= this.objetivo){ //ganas
+    estadoJuego = "victoria";
+    pantalla = 4;
+  }
+  
+  this.cajon.mostrar();
+  this.cajon.mover();
+  
+  }  
 }
 
 
@@ -329,9 +344,8 @@ rect(width/2-75, height/2+150, 150,50);
 fill(0);
 textSize(16);
 text("Menú principal", width/2, height/2+180);
+
 }
-
-
 
 //funcion de botones
 function mousePressed(){
@@ -355,29 +369,13 @@ if(pantalla === 1){
   if(mouseX >= width/2 + 124 && mouseX <= width/2 + 124 + 150 && mouseY >= height/2 + 168 && mouseY <= height/2 + 168 + 50){
   pantalla = 3;
   }
-} //se resetea todo al volver al menú
+} //se resetea todo
   if(pantalla === 4){
-  if(mouseX >= width/2 - 75 && mouseX <=width/2 + 75 && mouseY >= height/2 + 50 && mouseY <= height/2 + 100){
-    pantalla = 1;
-    estadoJuego = "";
-    vidas = new Vidas(2);
-    muñecos = [];
-    puntos = 0;
-  } 
-  if (pantalla === 4 && estadoJuego === "derrota") {
-    if (mouseX >= width / 2 - 75 && mouseX <= width / 2 + 75 && mouseY >= height / 2 + 150 && mouseY <= height / 2 + 200) {
+  if(mouseX >= width/2 - 75 && mouseX <=width/2 + 75 && mouseY >= height/2 + 70 && mouseY <= height/2 + 120){
+   pantalla = 1;
+   juego.reiniciar();
+  } else if (mouseX >= width / 2 - 75 && mouseX <= width / 2 + 75 && mouseY >= height / 2 + 150 && mouseY <= height / 2 + 200) {
       pantalla = 3; 
-      estadoJuego = ""; 
-      vidas = new Vidas(2); 
-      muñecos = [];
-      puntos = 0;
-    }
-  } else if (pantalla === 4 && estadoJuego === "victoria"){
-    if (mouseX >= width / 2 - 75 && mouseX <= width / 2 + 75 && mouseY >= height / 2 + 150 && mouseY <= height / 2 + 200) {
-      pantalla = 3; 
-      estadoJuego = ""; 
-      vidas = new Vidas(2); 
-      muñecos = [];
-      puntos = 0;
+      juego.reiniciar();
   }}
-}}
+}
